@@ -1,0 +1,3 @@
+ [template]
+ src   = "nginx.conf"
+ dest  = "/home/nginx.conf"

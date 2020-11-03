@@ -1,0 +1,36 @@
+version: '3'
+services:
+  wagtail:
+    build:
+      context: .
+      dockerfile: dockerfile
+      args:
+        project_name: mysite
+    image: wagtail
+    container_name: wagtail
+    environment:
+      project_name: mysite
+    networks:
+      - wagtail-network
+    
+
+  #Nginx Service
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx.dockerfile
+      args:
+        project_name: mysite
+    image: wagtailnginx
+    container_name: nginx
+    environment:
+      project_name: mysite
+    
+    ports:
+      - "80:8000"
+    networks:
+      - wagtail-network
+
+networks:
+  wagtail-network:
+    driver: bridge
