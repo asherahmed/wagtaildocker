@@ -6,13 +6,23 @@ services:
       dockerfile: dockerfile
       args:
         project_name: mysite
+        MYSQL_DATABASE: wagtaildb
+        MYSQL_USER: wagtailuser
+        MYSQL_PASSWORD: password
     image: wagtail
     container_name: wagtail
     environment:
       project_name: mysite
+      MYSQL_DATABASE: wagtaildb
+      MYSQL_USER: wagtailuser
+      MYSQL_PASSWORD: password
     networks:
       - wagtail-network
-    
+    depends_on: 
+      - mariadb
+    links:
+      - mariadb
+  #TODO: Get environment variables from a file
 
   #Nginx Service
   nginx:
@@ -25,12 +35,27 @@ services:
     container_name: nginx
     environment:
       project_name: mysite
-    
+    depends_on: 
+      - wagtail
     ports:
       - "80:8000"
     networks:
       - wagtail-network
 
+  #Mariadb service
+  mariadb:
+    image: mariadb:10.3
+    container_name: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: wagtaildb
+      MYSQL_USER: wagtailuser
+      MYSQL_PASSWORD: password
+    networks:
+      - wagtail-network
+    ports:
+      - "3306:3306"
 networks:
   wagtail-network:
     driver: bridge
